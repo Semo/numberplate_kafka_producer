@@ -11,7 +11,7 @@ public class KafkaeskAdapterApplication {
     public static void main(String[] args) {
         ConfigurableApplicationContext capc = SpringApplication.run(KafkaeskAdapterApplication.class, args);
 
-        GlobalMessageProducer producer = capc.getBean(GlobalMessageProducer.class);
-        producer.sendMessage("Hi there.");
+        NumberPlateSender numberPlateProducer = capc.getBean(NumberPlateSender.class);
+        numberPlateProducer.sendMessage("Hi there.");
     }
 }

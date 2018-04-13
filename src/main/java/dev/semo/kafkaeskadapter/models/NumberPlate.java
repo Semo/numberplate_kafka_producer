@@ -1,4 +1,4 @@
-package dev.semo.kafkaeskadapter.models.channels.numberplates;
+package dev.semo.kafkaeskadapter.models;
 
 import java.io.Serializable;
 

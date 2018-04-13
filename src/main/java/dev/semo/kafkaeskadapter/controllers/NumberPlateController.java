@@ -1,4 +1,4 @@
-package dev.semo.kafkaeskadapter.services;
+package dev.semo.kafkaeskadapter.controllers;
 
 import org.springframework.stereotype.Controller;
 

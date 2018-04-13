@@ -1,5 +1,6 @@
-package dev.semo.kafkaeskadapter.models.channels.numberplates;
+package dev.semo.kafkaeskadapter.producer.configs;
 
+import dev.semo.kafkaeskadapter.models.NumberPlate;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Value;
