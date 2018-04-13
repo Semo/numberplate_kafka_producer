@@ -33,7 +33,7 @@ public class GlobalMessageProducer {
         kafkaTemplate.send(partionedTopicName, partition, message);
     }
 
-    public void sendGreetingMessage(NumberPlate numberPlate) {
+    public void sendNumberPlateMessage(NumberPlate numberPlate) {
         numberplateKafkaTemplate.send(numberPlateTopicName, numberPlate);
     }
 
