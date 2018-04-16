@@ -1,11 +1,12 @@
 package dev.semo.kafkaeskadapter.models;
 
 import java.io.Serializable;
+import java.util.Arrays;
 
 public class NumberPlate implements Serializable {
 
     private String numberString;
-    private Byte[] imageBlob;
+    private byte[] imageBlob;
 
     public NumberPlate() {
     }
@@ -18,11 +19,19 @@ public class NumberPlate implements Serializable {
         this.numberString = numberString;
     }
 
-    public Byte[] getImageBlob() {
+    public byte[] getImageBlob() {
         return imageBlob;
     }
 
-    public void setImageBlob(Byte[] imageBlob) {
+    public void setImageBlob(byte[] imageBlob) {
         this.imageBlob = imageBlob;
+    }
+
+    @Override
+    public String toString() {
+        return "NumberPlate{" +
+                "numberString='" + numberString + '\'' +
+                ", imageBlob=" + Arrays.toString(imageBlob) +
+                '}';
     }
 }
