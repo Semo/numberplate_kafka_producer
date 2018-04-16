@@ -1,8 +1,11 @@
 package dev.semo.kafkaeskadapter;
 
 import dev.semo.kafkaeskadapter.models.NumberPlate;
+import dev.semo.kafkaeskadapter.producer.NumberPlateDeserializer;
 import dev.semo.kafkaeskadapter.producer.NumberPlateSender;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.*;
@@ -50,8 +53,10 @@ public class NumberPlateSenderTest {
     @Before
     public void setUp() throws Exception {
         // set up the Kafka consumer properties
-        Map<String, Object> consumerProperties =
-                KafkaTestUtils.consumerProps("sender", "false", embeddedKafka);
+        Map<String, Object> consumerProperties = KafkaTestUtils.consumerProps("sender", "false", embeddedKafka);
+        consumerProperties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        consumerProperties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, NumberPlateDeserializer.class);
+
 
         // create a Kafka consumer factory
         DefaultKafkaConsumerFactory<String, NumberPlate> consumerFactory =

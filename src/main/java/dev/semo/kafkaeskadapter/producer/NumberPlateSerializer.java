@@ -1,0 +1,32 @@
+package dev.semo.kafkaeskadapter.producer;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import dev.semo.kafkaeskadapter.models.NumberPlate;
+import org.apache.kafka.common.serialization.Serializer;
+
+import java.util.Map;
+
+public class NumberPlateSerializer implements Serializer<NumberPlate> {
+    @Override
+    public void configure(Map<String, ?> map, boolean b) {
+
+    }
+
+    @Override
+    public byte[] serialize(String s, NumberPlate numberPlate) {
+        byte[] serializedBytes = null;
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            serializedBytes = mapper.writeValueAsBytes(numberPlate);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return serializedBytes;
+    }
+
+    @Override
+    public void close() {
+
+    }
+}
