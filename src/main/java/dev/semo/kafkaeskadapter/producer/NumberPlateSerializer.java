@@ -17,7 +17,7 @@ public class NumberPlateSerializer implements Serializer<NumberPlate> {
         byte[] serializedBytes = null;
         ObjectMapper mapper = new ObjectMapper();
         try {
-            serializedBytes = mapper.writeValueAsBytes(numberPlate);
+            serializedBytes = mapper.writeValueAsString(numberPlate).getBytes();
         } catch (Exception e) {
             e.printStackTrace();
         }
