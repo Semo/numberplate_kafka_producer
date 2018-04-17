@@ -73,7 +73,7 @@ public class NumberPlateSenderTest {
 
         // setup a Kafka message listener
         container.setupMessageListener((MessageListener<String, NumberPlate>) record -> {
-            log.info("URGENT: Message Listener received message='{}'", record.toString());
+            log.info("Message Listener received message='{}'", record.toString());
             records.add(record);
         });
 
@@ -84,7 +84,7 @@ public class NumberPlateSenderTest {
         ContainerTestUtils.waitForAssignment(container, embeddedKafka.getPartitionsPerTopic());
     }
 
-    @DisplayName("Should send a Message to a Producer")
+    @DisplayName("Should send a Message to a Producer and retrieve it")
     @Test
     public void TestProducer() throws InterruptedException {
         //Test instance of Numberplate to send
@@ -98,7 +98,7 @@ public class NumberPlateSenderTest {
         numberPlateSender.sendNumberPlateMessage(localNumberplate);
 
         //Retrieve it
-        ConsumerRecord<String, NumberPlate> received = records.poll(1, TimeUnit.SECONDS);
+        ConsumerRecord<String, NumberPlate> received = records.poll(3, TimeUnit.SECONDS);
         log.info("Received the following content of ConsumerRecord: {}", received);
 
         if (received == null) {
