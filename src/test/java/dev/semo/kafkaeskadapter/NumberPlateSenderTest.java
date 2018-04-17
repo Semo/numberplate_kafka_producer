@@ -28,6 +28,11 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * @author semo, Artem Bilan
+ * With many kudos for Artem Bilan, solving a mean bug.
+ */
+
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @DisplayName("Testing GlobalMessageTest")
@@ -49,6 +54,11 @@ public class NumberPlateSenderTest {
 
     @ClassRule
     public static KafkaEmbedded embeddedKafka = new KafkaEmbedded(1, true, SENDER_TOPIC);
+
+    @BeforeClass
+    public static void beforeSetUp() {
+        System.setProperty("kafka.bootstrapAddress", embeddedKafka.getBrokersAsString());
+    }
 
     @Before
     public void setUp() throws Exception {
