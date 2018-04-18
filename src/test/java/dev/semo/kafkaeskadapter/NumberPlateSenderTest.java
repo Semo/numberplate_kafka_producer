@@ -39,21 +39,16 @@ import java.util.concurrent.TimeUnit;
 @DirtiesContext
 public class NumberPlateSenderTest {
 
-    private static Logger log = LogManager.getLogger(NumberPlateSenderTest.class);
-
-    @Autowired
-    KafkaeskAdapterApplication kafkaeskAdapterApplication;
-
-    @Autowired
-    private NumberPlateSender numberPlateSender;
-
-    private KafkaMessageListenerContainer<String, NumberPlate> container;
-    private BlockingQueue<ConsumerRecord<String, NumberPlate>> records;
-
     private static final String SENDER_TOPIC = "numberplate_test_topic";
-
     @ClassRule
     public static KafkaEmbedded embeddedKafka = new KafkaEmbedded(1, true, SENDER_TOPIC);
+    private static Logger log = LogManager.getLogger(NumberPlateSenderTest.class);
+    @Autowired
+    KafkaeskAdapterApplication kafkaeskAdapterApplication;
+    @Autowired
+    private NumberPlateSender numberPlateSender;
+    private KafkaMessageListenerContainer<String, NumberPlate> container;
+    private BlockingQueue<ConsumerRecord<String, NumberPlate>> records;
 
     @BeforeClass
     public static void beforeSetUp() {
@@ -111,6 +106,7 @@ public class NumberPlateSenderTest {
         ConsumerRecord<String, NumberPlate> received = records.poll(3, TimeUnit.SECONDS);
         log.info("Received the following content of ConsumerRecord: {}", received);
 
+        //Assert it
         if (received == null) {
             assert false;
         } else {
