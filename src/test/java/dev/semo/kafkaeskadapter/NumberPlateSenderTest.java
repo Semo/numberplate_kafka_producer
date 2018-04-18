@@ -42,9 +42,12 @@ public class NumberPlateSenderTest {
     private static final String SENDER_TOPIC = "numberplate_test_topic";
     @ClassRule
     public static KafkaEmbedded embeddedKafka = new KafkaEmbedded(1, true, SENDER_TOPIC);
+
     private static Logger log = LogManager.getLogger(NumberPlateSenderTest.class);
+
     @Autowired
     KafkaeskAdapterApplication kafkaeskAdapterApplication;
+
     @Autowired
     private NumberPlateSender numberPlateSender;
     private KafkaMessageListenerContainer<String, NumberPlate> container;
@@ -61,7 +64,6 @@ public class NumberPlateSenderTest {
         Map<String, Object> consumerProperties = KafkaTestUtils.consumerProps("sender", "false", embeddedKafka);
         consumerProperties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         consumerProperties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, NumberPlateDeserializer.class);
-
 
         // create a Kafka consumer factory
         DefaultKafkaConsumerFactory<String, NumberPlate> consumerFactory =

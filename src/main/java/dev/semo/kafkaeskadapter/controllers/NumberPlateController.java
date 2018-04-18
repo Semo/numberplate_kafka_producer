@@ -1,8 +1,10 @@
 package dev.semo.kafkaeskadapter.controllers;
 
 import dev.semo.kafkaeskadapter.models.NumberPlate;
+import dev.semo.kafkaeskadapter.producer.NumberPlateSender;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +20,8 @@ public class NumberPlateController {
 
     private static Logger log = LogManager.getLogger(NumberPlateController.class);
 
+    @Autowired
+    private NumberPlateSender numberPlateSender;
 
     @RequestMapping(value = "/simple", method = RequestMethod.GET)
     public ResponseEntity getSimpleOK() {
@@ -34,6 +38,8 @@ public class NumberPlateController {
             e.printStackTrace();
         }
         np.setNumberString(plate);
+
+        numberPlateSender.sendNumberPlateMessage(np);
 
         log.info("Received a plate: {}", np.getNumberString());
 

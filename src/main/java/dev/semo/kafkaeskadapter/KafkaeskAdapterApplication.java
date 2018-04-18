@@ -7,7 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 
-@ComponentScan("dev.semo.kafkaeskadapter.controllers")
+@ComponentScan
 @SpringBootApplication
 public class KafkaeskAdapterApplication {
 
