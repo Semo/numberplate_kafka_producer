@@ -11,6 +11,8 @@ import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
 
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,10 +23,18 @@ public class KafkaNumberplateProducerConfig {
 
     @Bean
     public ProducerFactory<String, NumberPlate> numberPlateProducerFactory() {
+
         Map<String, Object> configProps = new HashMap<>();
         configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);
         configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, NumberPlateSerializer.class);
+        try {
+            configProps.put(ProducerConfig.CLIENT_ID_CONFIG, NetworkInterface.getNetworkInterfaces()
+                    .nextElement()
+                    .getInetAddresses().nextElement().toString());
+        } catch (SocketException e) {
+            e.printStackTrace();
+        }
         return new DefaultKafkaProducerFactory<>(configProps);
     }
 

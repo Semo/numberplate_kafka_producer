@@ -29,6 +29,5 @@ public class NumberPlateDeserializer implements Deserializer<NumberPlate> {
 
     @Override
     public void close() {
-
     }
 }
