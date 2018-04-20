@@ -120,7 +120,10 @@ public class NumberPlateSenderTest {
     @After
     public void tearDown() {
         // stop the container
+        records.clear();
+        records = null;
         container.stop();
+        container = null;
     }
 
 }

@@ -143,7 +143,11 @@ public class NumberPlateControllerTest {
     @After
     public void tearDown() {
         // stop the container
+        records.clear();
+        records = null;
         container.stop();
+        container = null;
+
     }
 
 }
