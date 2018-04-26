@@ -1,14 +1,22 @@
 package dev.semo.kafkaeskadapter;
 
-import dev.semo.kafkaeskadapter.models.NumberPlate;
-import dev.semo.kafkaeskadapter.producer.NumberPlateDeserializer;
-import dev.semo.kafkaeskadapter.producer.NumberPlateSender;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.util.Map;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
+
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.junit.*;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
+import org.junit.Test;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,14 +31,14 @@ import org.springframework.kafka.test.utils.KafkaTestUtils;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.Map;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
+import dev.semo.kafkaeskadapter.models.NumberPlate;
+import dev.semo.kafkaeskadapter.producer.NumberPlateDeserializer;
+import dev.semo.kafkaeskadapter.producer.NumberPlateSender;
+
 
 /**
- * @author semo, Artem Bilan
- * With many kudos for Artem Bilan, solving a mean bug.
+ * @author semo, Artem Bilan With many kudos for Artem Bilan, solving a mean
+ *         bug.
  */
 
 @RunWith(SpringRunner.class)
@@ -39,91 +47,95 @@ import java.util.concurrent.TimeUnit;
 @DirtiesContext
 public class NumberPlateSenderTest {
 
-    private static final String SENDER_TOPIC = "numberplate_test_topic";
-    @ClassRule
-    public static KafkaEmbedded embeddedKafka = new KafkaEmbedded(1, true, SENDER_TOPIC);
+	private static final String SENDER_TOPIC = "numberplate_test_topic";
 
-    private static Logger log = LogManager.getLogger(NumberPlateSenderTest.class);
+	@ClassRule
+	public static KafkaEmbedded embeddedKafka = new KafkaEmbedded(1, true, SENDER_TOPIC);
 
-    @Autowired
-    KafkaeskAdapterApplication kafkaeskAdapterApplication;
+	private static Logger log = LogManager.getLogger(NumberPlateSenderTest.class);
 
-    @Autowired
-    private NumberPlateSender numberPlateSender;
-    private KafkaMessageListenerContainer<String, NumberPlate> container;
-    private BlockingQueue<ConsumerRecord<String, NumberPlate>> records;
+	@Autowired
+	KafkaeskAdapterApplication kafkaeskAdapterApplication;
 
-    @BeforeClass
-    public static void beforeSetUp() {
-        System.setProperty("kafka.bootstrapAddress", embeddedKafka.getBrokersAsString());
-    }
+	@Autowired
+	private NumberPlateSender numberPlateSender;
+	private KafkaMessageListenerContainer<String, NumberPlate> container;
+	private BlockingQueue<ConsumerRecord<String, NumberPlate>> records;
 
-    @Before
-    public void setUp() throws Exception {
-        // set up the Kafka consumer properties
-        Map<String, Object> consumerProperties = KafkaTestUtils.consumerProps("sender", "false", embeddedKafka);
-        consumerProperties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-        consumerProperties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, NumberPlateDeserializer.class);
+	@BeforeClass
+	public static void beforeSetUp() {
+		System.setProperty("kafka.bootstrapAddress", embeddedKafka.getBrokersAsString());
+	}
 
-        // create a Kafka consumer factory
-        DefaultKafkaConsumerFactory<String, NumberPlate> consumerFactory =
-                new DefaultKafkaConsumerFactory<>(consumerProperties);
+	@Before
+	public void setUp() throws Exception {
 
-        // set the topic that needs to be consumed
-        ContainerProperties containerProperties = new ContainerProperties(SENDER_TOPIC);
+		System.setProperty("kafka.bootstrapAddress", embeddedKafka.getBrokersAsString());
 
-        // create a Kafka MessageListenerContainer
-        container = new KafkaMessageListenerContainer<>(consumerFactory, containerProperties);
+		// set up the Kafka consumer properties
+		Map<String, Object> consumerProperties = KafkaTestUtils.consumerProps("sender", "false", embeddedKafka);
+		consumerProperties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+		consumerProperties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, NumberPlateDeserializer.class);
 
-        // create a thread safe queue to store the received message
-        records = new LinkedBlockingQueue<>();
+		// create a Kafka consumer factory
+		DefaultKafkaConsumerFactory<String, NumberPlate> consumerFactory = new DefaultKafkaConsumerFactory<>(
+				consumerProperties);
 
-        // setup a Kafka message listener
-        container.setupMessageListener((MessageListener<String, NumberPlate>) record -> {
-            log.info("Message Listener received message='{}'", record.toString());
-            records.add(record);
-        });
+		// set the topic that needs to be consumed
+		ContainerProperties containerProperties = new ContainerProperties(SENDER_TOPIC);
 
-        // start the container and underlying message listener
-        container.start();
+		// create a Kafka MessageListenerContainer
+		container = new KafkaMessageListenerContainer<>(consumerFactory, containerProperties);
 
-        // wait until the container has the required number of assigned partitions
-        ContainerTestUtils.waitForAssignment(container, embeddedKafka.getPartitionsPerTopic());
-    }
+		// create a thread safe queue to store the received message
+		records = new LinkedBlockingQueue<>();
 
-    @DisplayName("Should send a Message to a Producer and retrieve it")
-    @Test
-    public void TestProducer() throws InterruptedException {
-        //Test instance of Numberplate to send
-        NumberPlate localNumberplate = new NumberPlate();
-        byte[] bytes = "0x33".getBytes();
-        localNumberplate.setImageBlob(bytes);
-        localNumberplate.setNumberString("ABC123");
-        log.info(localNumberplate.toString());
+		// setup a Kafka message listener
+		container.setupMessageListener((MessageListener<String, NumberPlate>) record -> {
+			log.info("Message Listener received message='{}'", record.toString());
+			records.add(record);
+		});
 
-        //Send it
-        numberPlateSender.sendNumberPlateMessage(localNumberplate);
+		// start the container and underlying message listener
+		container.start();
 
-        //Retrieve it
-        ConsumerRecord<String, NumberPlate> received = records.poll(3, TimeUnit.SECONDS);
-        log.info("Received the following content of ConsumerRecord: {}", received);
+		// wait until the container has the required number of assigned partitions
+		ContainerTestUtils.waitForAssignment(container, embeddedKafka.getPartitionsPerTopic());
+	}
 
-        //Assert it
-        if (received == null) {
-            assert false;
-        } else {
-            NumberPlate retrNumberplate = received.value();
-            Assert.assertEquals(retrNumberplate, localNumberplate);
-        }
-    }
+//	@DisplayName("Should send a Message to a Producer and retrieve it")
+	@Test
+	public void testProducer() throws InterruptedException {
+		// Test instance of Numberplate to send
+		NumberPlate localNumberplate = new NumberPlate();
+		byte[] bytes = "0x33".getBytes();
+		localNumberplate.setImageBlob(bytes);
+		localNumberplate.setNumberString("ABC123");
+		log.info(localNumberplate.toString());
 
-    @After
-    public void tearDown() {
-        // stop the container
-        records.clear();
-        records = null;
-        container.stop();
-        container = null;
-    }
+		// Send it
+		numberPlateSender.sendNumberPlateMessage(localNumberplate);
+
+		// Retrieve it
+		ConsumerRecord<String, NumberPlate> received = records.poll(1, TimeUnit.SECONDS);
+		log.info("Received the following content of ConsumerRecord: {}", received);
+
+		// Assert it
+		if (received == null) {
+			assert false;
+		} else {
+			NumberPlate retrNumberplate = received.value();
+			assertEquals(retrNumberplate, localNumberplate);
+		}
+	}
+
+	@After
+	public void tearDown() {
+		// stop the container
+		records.clear();
+		records = null;
+		container.stop();
+		container = null;
+	}
 
 }

@@ -1,16 +1,26 @@
 package dev.semo.kafkaeskadapter;
 
 
-import dev.semo.kafkaeskadapter.controllers.NumberPlateController;
-import dev.semo.kafkaeskadapter.models.NumberPlate;
-import dev.semo.kafkaeskadapter.producer.NumberPlateDeserializer;
-import dev.semo.kafkaeskadapter.producer.NumberPlateSender;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Map;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
+
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.junit.*;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -27,16 +37,10 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.Map;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import dev.semo.kafkaeskadapter.controllers.NumberPlateController;
+import dev.semo.kafkaeskadapter.models.NumberPlate;
+import dev.semo.kafkaeskadapter.producer.NumberPlateDeserializer;
+//import dev.semo.kafkaeskadapter.producer.NumberPlateSender;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = KafkaeskAdapterApplication.class)
@@ -53,16 +57,13 @@ public class NumberPlateControllerTest {
     @Autowired
     KafkaeskAdapterApplication kafkaeskAdapterApplication;
 
-    @Autowired
-    private NumberPlateSender numberPlateSender;
+//    @Autowired
+//	private NumberPlateSender numberPlateSender;
     private KafkaMessageListenerContainer<String, NumberPlate> container;
     private BlockingQueue<ConsumerRecord<String, NumberPlate>> records;
 
     @BeforeClass
     public static void beforeSetUp() {
-        System.out.println("##########################################");
-        System.out.println("##########################################");
-        System.out.println("##########################################");
         System.out.println("##########################################");
         System.out.println(embeddedKafka.getBrokersAsString());
 
@@ -119,8 +120,8 @@ public class NumberPlateControllerTest {
         try {
             File tempFile = File.createTempFile("temp-file-name", ".tmp");
             byte[] b = new byte[(int) tempFile.length()];
-            FileInputStream fileInputStream = new FileInputStream(tempFile);
-            fileInputStream.read(b);
+//            FileInputStream fileInputStream = new FileInputStream(tempFile);
+//            fileInputStream.read(b);
             for (int i = 0; i < b.length; i++) {
                 System.out.print((char) b[i]);
             }
