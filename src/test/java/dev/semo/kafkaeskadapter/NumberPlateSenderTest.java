@@ -35,7 +35,6 @@ import dev.semo.kafkaeskadapter.models.NumberPlate;
 import dev.semo.kafkaeskadapter.producer.NumberPlateDeserializer;
 import dev.semo.kafkaeskadapter.producer.NumberPlateSender;
 
-
 /**
  * @author semo, Artem Bilan With many kudos for Artem Bilan, solving a mean
  *         bug.
@@ -103,7 +102,7 @@ public class NumberPlateSenderTest {
 		ContainerTestUtils.waitForAssignment(container, embeddedKafka.getPartitionsPerTopic());
 	}
 
-//	@DisplayName("Should send a Message to a Producer and retrieve it")
+	// @DisplayName("Should send a Message to a Producer and retrieve it")
 	@Test
 	public void testProducer() throws InterruptedException {
 		// Test instance of Numberplate to send

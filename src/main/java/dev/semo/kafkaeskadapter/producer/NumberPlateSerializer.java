@@ -7,11 +7,16 @@ import org.apache.kafka.common.serialization.Serializer;
 import java.util.Map;
 
 public class NumberPlateSerializer implements Serializer<NumberPlate> {
+
     @Override
-    public void configure(Map<String, ?> map, boolean b) {
+    public void configure(Map<String, ?> map, boolean b) {}
 
-    }
-
+    /**
+     * Required Serializer to work with custom objects.
+     * @param s
+     * @param numberPlate
+     * @return
+     */
     @Override
     public byte[] serialize(String s, NumberPlate numberPlate) {
         byte[] serializedBytes = null;
@@ -21,12 +26,10 @@ public class NumberPlateSerializer implements Serializer<NumberPlate> {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         return serializedBytes;
     }
 
     @Override
     public void close() {
-
     }
 }
