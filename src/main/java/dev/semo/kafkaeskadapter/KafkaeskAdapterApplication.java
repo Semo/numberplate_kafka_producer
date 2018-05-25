@@ -39,19 +39,19 @@ public class KafkaeskAdapterApplication {
 		byte[] imageBlob3 = {123};
 		n3.setImageBlob(imageBlob3);
         
-        numberPlateProducer.sendNumberPlateMessage(n1);
-        numberPlateProducer.sendNumberPlateMessage(n2);
-        numberPlateProducer.sendNumberPlateMessage(n3);
-        numberPlateProducer.sendNumberPlateMessage(n1);
-        numberPlateProducer.sendNumberPlateMessage(n2);
-        numberPlateProducer.sendNumberPlateMessage(n3);
-        numberPlateProducer.sendNumberPlateMessage(n1);
-        numberPlateProducer.sendNumberPlateMessage(n2);
-        numberPlateProducer.sendNumberPlateMessage(n3);
-        numberPlateProducer.sendNumberPlateMessage(n1);
-        numberPlateProducer.sendNumberPlateMessage(n2);
-        numberPlateProducer.sendNumberPlateMessage(n3);
-        numberPlateProducer.sendNumberPlateMessage(n1);
-        numberPlateProducer.sendNumberPlateMessage(n2);
+//        numberPlateProducer.sendNumberPlateMessage(n1);
+//        numberPlateProducer.sendNumberPlateMessage(n2);
+//        numberPlateProducer.sendNumberPlateMessage(n3);
+//        numberPlateProducer.sendNumberPlateMessage(n1);
+//        numberPlateProducer.sendNumberPlateMessage(n2);
+//        numberPlateProducer.sendNumberPlateMessage(n3);
+//        numberPlateProducer.sendNumberPlateMessage(n1);
+//        numberPlateProducer.sendNumberPlateMessage(n2);
+//        numberPlateProducer.sendNumberPlateMessage(n3);
+//        numberPlateProducer.sendNumberPlateMessage(n1);
+//        numberPlateProducer.sendNumberPlateMessage(n2);
+//        numberPlateProducer.sendNumberPlateMessage(n3);
+//        numberPlateProducer.sendNumberPlateMessage(n1);
+//        numberPlateProducer.sendNumberPlateMessage(n2);
     }
 }

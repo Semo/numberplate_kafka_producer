@@ -78,7 +78,7 @@ public class NumberPlateController {
         }
         np.setNumberString(plate);
         numberPlateSender.sendNumberPlateMessage(np);
-        return new ResponseEntity<String>(HttpStatus.ACCEPTED);
+        return new ResponseEntity<String>(HttpStatus.OK);
     }
 
     @RequestMapping(value = "/data/unserialized", method = RequestMethod.POST)
@@ -92,7 +92,7 @@ public class NumberPlateController {
 
         numberPlateSender.sendNumberPlateMessage(np);
 
-        return new ResponseEntity<String>(HttpStatus.ACCEPTED);
+        return new ResponseEntity<String>(HttpStatus.OK);
     }
 
 
