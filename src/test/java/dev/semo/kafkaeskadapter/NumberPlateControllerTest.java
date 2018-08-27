@@ -11,10 +11,12 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.*;
+import org.junit.matchers.JUnitMatchers;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.listener.KafkaMessageListenerContainer;
 import org.springframework.kafka.listener.MessageListener;
@@ -26,6 +28,7 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
 import java.io.File;
 import java.io.IOException;
@@ -34,7 +37,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 //import dev.semo.kafkaeskadapter.producer.NumberPlateSender;
 
@@ -105,19 +108,10 @@ public class NumberPlateControllerTest {
     private MockMvc mvc;
 
     @Test
-    public void getOk() throws Exception {
-        npc.getSimpleOK();
-        mvc.perform(get("/simple")).
-                andExpect(status().is2xxSuccessful());
-    }
-
-    @Test
-    public void postNumberPlate() {
+    public void shouldPostNumberPlate() {
         try {
             File tempFile = File.createTempFile("temp-file-name", ".tmp");
             byte[] b = new byte[(int) tempFile.length()];
-//            FileInputStream fileInputStream = new FileInputStream(tempFile);
-//            fileInputStream.read(b);
             for (int i = 0; i < b.length; i++) {
                 System.out.print((char) b[i]);
             }
@@ -137,6 +131,23 @@ public class NumberPlateControllerTest {
         }
     }
 
+    @Test
+    public void shouldReturnBadRequestWithoutUploadFile() throws Exception {
+
+        MockMultipartFile mockFile;
+
+        this.mvc.perform(
+                post("/data")
+                        .contentType(MediaType.MULTIPART_FORM_DATA)
+                        .content("blabla")
+        )
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isBadRequest())
+                .andExpect(status().reason(JUnitMatchers.containsString("Required String parameter 'numplate' is not present")));
+
+
+    }
+
     @After
     public void tearDown() {
         // stop the container
@@ -146,5 +157,4 @@ public class NumberPlateControllerTest {
         container = null;
 
     }
-
 }

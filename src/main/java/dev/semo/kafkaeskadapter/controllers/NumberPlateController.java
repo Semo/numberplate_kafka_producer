@@ -6,7 +6,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,37 +23,6 @@ public class NumberPlateController {
 
     @Autowired
     private NumberPlateSender numberPlateSender;
-
-    @RequestMapping(value = "/simple", method = RequestMethod.GET)
-    public ResponseEntity<String> getSimpleOK() {
-        return new ResponseEntity<String>(HttpStatus.ACCEPTED);
-    }
-
-    @RequestMapping(value = "/test", method = RequestMethod.POST)
-    public ResponseEntity<String> receive(@RequestParam("sample") String sample) {
-
-        log.info("Got a sample message: {}", sample);
-
-        ResponseEntity<String> entity = new ResponseEntity<>(HttpStatus.ACCEPTED);
-
-        String body = entity.getBody();
-        MediaType contentType = entity.getHeaders().getContentType();
-        HttpStatus statusCode = entity.getStatusCode();
-
-        System.out.println(contentType);
-        System.out.println(statusCode);
-        System.out.println(body);
-
-        return entity;
-    }
-
-    @PostMapping("/data/test")
-    public ResponseEntity<String> postStuffTtest(@RequestParam("numplate") String plate, @RequestParam
-            ("image") String bas64Image) {
-        log.info("Received a plate: {}", plate + " " + bas64Image);
-        return new ResponseEntity<String>(HttpStatus.ACCEPTED);
-    }
-
 
     @PostMapping("/data")
     public ResponseEntity<String> postNumberPlate(@RequestParam("numplate") String plate, @RequestParam("image")
