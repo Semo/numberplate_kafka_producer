@@ -1,23 +1,20 @@
 package dev.semo.kafkaeskadapter.controllers;
 
-import java.io.IOException;
-import java.util.Base64;
-
-import javax.servlet.annotation.MultipartConfig;
-import javax.servlet.http.HttpServletResponse;
-
+import dev.semo.kafkaeskadapter.models.NumberPlate;
+import dev.semo.kafkaeskadapter.producer.NumberPlateSender;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import dev.semo.kafkaeskadapter.models.NumberPlate;
-import dev.semo.kafkaeskadapter.producer.NumberPlateSender;
+import javax.servlet.annotation.MultipartConfig;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.Base64;
 
 @RestController
 @MultipartConfig(fileSizeThreshold = 5500)
@@ -35,20 +32,20 @@ public class NumberPlateController {
 
     @RequestMapping(value = "/test", method = RequestMethod.POST)
     public ResponseEntity<String> receive(@RequestParam("sample") String sample) {
-    	
-    	log.info("Got a sample message: {}", sample);
-    	
-    	ResponseEntity<String> entity = new ResponseEntity<>(HttpStatus.ACCEPTED);
-    	
-    	String body = entity.getBody();
-    	 MediaType contentType = entity.getHeaders().getContentType();
-    	 HttpStatus statusCode = entity.getStatusCode();
-    	
-    	 System.out.println(contentType);
-    	 System.out.println(statusCode);
-    	 System.out.println(body);
-    	 
-    	return entity;
+
+        log.info("Got a sample message: {}", sample);
+
+        ResponseEntity<String> entity = new ResponseEntity<>(HttpStatus.ACCEPTED);
+
+        String body = entity.getBody();
+        MediaType contentType = entity.getHeaders().getContentType();
+        HttpStatus statusCode = entity.getStatusCode();
+
+        System.out.println(contentType);
+        System.out.println(statusCode);
+        System.out.println(body);
+
+        return entity;
     }
 
     @PostMapping("/data/test")
@@ -57,7 +54,6 @@ public class NumberPlateController {
         log.info("Received a plate: {}", plate + " " + bas64Image);
         return new ResponseEntity<String>(HttpStatus.ACCEPTED);
     }
-
 
 
     @PostMapping("/data")
@@ -84,7 +80,7 @@ public class NumberPlateController {
     @RequestMapping(value = "/data/unserialized", method = RequestMethod.POST)
     public ResponseEntity<String> postNumberPlateUnserialized(@RequestParam("numplate") String plate, @RequestParam
             ("image") String
-             base64EncodedImage) {
+            base64EncodedImage) {
         NumberPlate np = new NumberPlate();
         np.setImageBlob(Base64.getDecoder().decode(base64EncodedImage));
         np.setNumberString(plate);
@@ -96,10 +92,8 @@ public class NumberPlateController {
     }
 
 
-
     @ExceptionHandler
     void handleIllegalArgumentException(IllegalArgumentException e, HttpServletResponse response) throws IOException {
         response.sendError(HttpStatus.BAD_REQUEST.value());
     }
-
 }
