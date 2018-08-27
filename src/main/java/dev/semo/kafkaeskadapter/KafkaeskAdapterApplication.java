@@ -9,6 +9,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 
+//@ComponentScan
 @SpringBootApplication
 public class KafkaeskAdapterApplication {
 

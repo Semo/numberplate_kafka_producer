@@ -1,22 +1,14 @@
 package dev.semo.kafkaeskadapter;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import java.util.Map;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
-
+import dev.semo.kafkaeskadapter.models.NumberPlate;
+import dev.semo.kafkaeskadapter.producer.NumberPlateDeserializer;
+import dev.semo.kafkaeskadapter.producer.NumberPlateSender;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,9 +23,12 @@ import org.springframework.kafka.test.utils.KafkaTestUtils;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import dev.semo.kafkaeskadapter.models.NumberPlate;
-import dev.semo.kafkaeskadapter.producer.NumberPlateDeserializer;
-import dev.semo.kafkaeskadapter.producer.NumberPlateSender;
+import java.util.Map;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @author semo, Artem Bilan With many kudos for Artem Bilan, solving a mean
@@ -41,7 +36,9 @@ import dev.semo.kafkaeskadapter.producer.NumberPlateSender;
  */
 
 @RunWith(SpringRunner.class)
-@SpringBootTest
+//@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = KafkaeskAdapterApplication.class)
+
 @DisplayName("Testing GlobalMessageTest")
 @DirtiesContext
 public class NumberPlateSenderTest {

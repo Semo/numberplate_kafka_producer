@@ -1,26 +1,16 @@
 package dev.semo.kafkaeskadapter;
 
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.Map;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
-
+import dev.semo.kafkaeskadapter.controllers.NumberPlateController;
+import dev.semo.kafkaeskadapter.models.NumberPlate;
+import dev.semo.kafkaeskadapter.producer.NumberPlateDeserializer;
+import dev.semo.kafkaeskadapter.producer.NumberPlateSender;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -37,9 +27,15 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
-import dev.semo.kafkaeskadapter.controllers.NumberPlateController;
-import dev.semo.kafkaeskadapter.models.NumberPlate;
-import dev.semo.kafkaeskadapter.producer.NumberPlateDeserializer;
+import java.io.File;
+import java.io.IOException;
+import java.util.Map;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 //import dev.semo.kafkaeskadapter.producer.NumberPlateSender;
 
 @RunWith(SpringRunner.class)
@@ -57,8 +53,8 @@ public class NumberPlateControllerTest {
     @Autowired
     KafkaeskAdapterApplication kafkaeskAdapterApplication;
 
-//    @Autowired
-//	private NumberPlateSender numberPlateSender;
+    @Autowired
+    private NumberPlateSender numberPlateSender;
     private KafkaMessageListenerContainer<String, NumberPlate> container;
     private BlockingQueue<ConsumerRecord<String, NumberPlate>> records;
 

@@ -12,7 +12,7 @@ public class NumberPlateSerializer implements Serializer<NumberPlate> {
     public void configure(Map<String, ?> map, boolean b) {}
 
     /**
-     * Required Serializer to work with custom objects.
+     * Kafka requires a Serializer to work with custom objects.
      * @param s
      * @param numberPlate
      * @return
