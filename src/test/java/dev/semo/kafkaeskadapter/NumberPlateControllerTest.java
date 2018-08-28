@@ -28,9 +28,12 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
@@ -39,7 +42,6 @@ import java.util.concurrent.TimeUnit;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-//import dev.semo.kafkaeskadapter.producer.NumberPlateSender;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = KafkaeskAdapterApplication.class)
@@ -55,11 +57,14 @@ public class NumberPlateControllerTest {
 
     @Autowired
     KafkaeskAdapterApplication kafkaeskAdapterApplication;
-
+    @Autowired
+    NumberPlateController npc;
     @Autowired
     private NumberPlateSender numberPlateSender;
     private KafkaMessageListenerContainer<String, NumberPlate> container;
     private BlockingQueue<ConsumerRecord<String, NumberPlate>> records;
+    @Autowired
+    private MockMvc mvc;
 
     @BeforeClass
     public static void beforeSetUp() {
@@ -102,19 +107,11 @@ public class NumberPlateControllerTest {
         ContainerTestUtils.waitForAssignment(container, embeddedKafka.getPartitionsPerTopic());
     }
 
-    @Autowired
-    NumberPlateController npc;
-    @Autowired
-    private MockMvc mvc;
-
     @Test
-    public void shouldPostNumberPlate() {
+    public void shouldPostNumberPlateDirectly() {
         try {
             File tempFile = File.createTempFile("temp-file-name", ".tmp");
             byte[] b = new byte[(int) tempFile.length()];
-            for (int i = 0; i < b.length; i++) {
-                System.out.print((char) b[i]);
-            }
             MockMultipartFile mockFile = new MockMultipartFile("data", tempFile.getName(), "text/plain", b);
             npc.postNumberPlate("ABC123", mockFile);
 
@@ -132,11 +129,33 @@ public class NumberPlateControllerTest {
     }
 
     @Test
+    public void shouldPostPostNumberPlateSuccessfully() {
+        try {
+            File tempFile = File.createTempFile("another_Temp_File", ".tmp");
+            BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile, true));
+            writer.append("Hallo Welt.");
+            writer.close();
+            byte[] b = new byte[(int) tempFile.length()];
+            MockMultipartFile mockFile = new MockMultipartFile("image", tempFile.getName(), "text/plain", tempFile.getName().getBytes());
+
+            mvc.perform(
+                    MockMvcRequestBuilders.multipart("/data")
+                            .file(mockFile)
+                            .param("numplate", "ABC")
+            )
+                    .andDo(MockMvcResultHandlers.print())
+                    .andExpect(status().is(200));
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
     public void shouldReturnBadRequestWithoutUploadFile() throws Exception {
-
         MockMultipartFile mockFile;
-
-        this.mvc.perform(
+        mvc.perform(
                 post("/data")
                         .contentType(MediaType.MULTIPART_FORM_DATA)
                         .content("blabla")
@@ -144,8 +163,6 @@ public class NumberPlateControllerTest {
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(status().isBadRequest())
                 .andExpect(status().reason(JUnitMatchers.containsString("Required String parameter 'numplate' is not present")));
-
-
     }
 
     @After
@@ -155,6 +172,5 @@ public class NumberPlateControllerTest {
         records = null;
         container.stop();
         container = null;
-
     }
 }
