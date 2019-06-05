@@ -18,9 +18,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
+import org.springframework.kafka.listener.ContainerProperties;
 import org.springframework.kafka.listener.KafkaMessageListenerContainer;
 import org.springframework.kafka.listener.MessageListener;
-import org.springframework.kafka.listener.config.ContainerProperties;
 import org.springframework.kafka.test.rule.KafkaEmbedded;
 import org.springframework.kafka.test.utils.ContainerTestUtils;
 import org.springframework.kafka.test.utils.KafkaTestUtils;
@@ -71,7 +71,7 @@ public class NumberPlateControllerTest {
         System.out.println("##########################################");
         System.out.println(embeddedKafka.getBrokersAsString());
 
-        System.setProperty("kafka.bootstrapAddress", embeddedKafka.getBrokersAsString());
+        System.setProperty("spring.kafka.producer.bootstrap-servers", embeddedKafka.getBrokersAsString());
     }
 
     @Before

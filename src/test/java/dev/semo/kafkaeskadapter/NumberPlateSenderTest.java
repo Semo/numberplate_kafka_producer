@@ -9,26 +9,24 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.*;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
+import org.springframework.kafka.listener.ContainerProperties;
 import org.springframework.kafka.listener.KafkaMessageListenerContainer;
 import org.springframework.kafka.listener.MessageListener;
-import org.springframework.kafka.listener.config.ContainerProperties;
 import org.springframework.kafka.test.rule.KafkaEmbedded;
 import org.springframework.kafka.test.utils.ContainerTestUtils;
 import org.springframework.kafka.test.utils.KafkaTestUtils;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
-
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author semo, Artem Bilan With many kudos for Artem Bilan, solving a mean
@@ -36,10 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  */
 
 @RunWith(SpringRunner.class)
-//@SpringBootTest
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = KafkaeskAdapterApplication.class)
-
-@DisplayName("Testing GlobalMessageTest")
 @DirtiesContext
 public class NumberPlateSenderTest {
 
@@ -60,13 +55,13 @@ public class NumberPlateSenderTest {
 
 	@BeforeClass
 	public static void beforeSetUp() {
-		System.setProperty("kafka.bootstrapAddress", embeddedKafka.getBrokersAsString());
+		System.setProperty("spring.kafka.producer.bootstrap-servers", embeddedKafka.getBrokersAsString());
 	}
 
 	@Before
 	public void setUp() throws Exception {
 
-		System.setProperty("kafka.bootstrapAddress", embeddedKafka.getBrokersAsString());
+		System.setProperty("spring.kafka.producer.bootstrap-servers", embeddedKafka.getBrokersAsString());
 
 		// set up the Kafka consumer properties
 		Map<String, Object> consumerProperties = KafkaTestUtils.consumerProps("sender", "false", embeddedKafka);
