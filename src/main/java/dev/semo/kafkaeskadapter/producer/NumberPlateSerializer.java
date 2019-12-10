@@ -9,10 +9,12 @@ import java.util.Map;
 public class NumberPlateSerializer implements Serializer<NumberPlate> {
 
     @Override
-    public void configure(Map<String, ?> map, boolean b) {}
+    public void configure(Map<String, ?> map, boolean b) {
+    }
 
     /**
      * Kafka requires a Serializer to work with custom objects.
+     *
      * @param s
      * @param numberPlate
      * @return

@@ -21,6 +21,7 @@ import org.springframework.kafka.test.utils.ContainerTestUtils;
 import org.springframework.kafka.test.utils.KafkaTestUtils;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
+
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -30,7 +31,7 @@ import static org.junit.Assert.assertEquals;
 
 /**
  * @author semo, Artem Bilan With many kudos for Artem Bilan, solving a mean
- *         bug.
+ * bug.
  */
 
 @RunWith(SpringRunner.class)
@@ -38,95 +39,97 @@ import static org.junit.Assert.assertEquals;
 @DirtiesContext
 public class NumberPlateSenderTest {
 
-	private static final String SENDER_TOPIC = "numberplate_test_topic";
+    private static final String SENDER_TOPIC = "numberplate_test_topic";
 
-	@ClassRule
-	public static KafkaEmbedded embeddedKafka = new KafkaEmbedded(1, true, SENDER_TOPIC);
+    @ClassRule
+    public static KafkaEmbedded embeddedKafka = new KafkaEmbedded(1, true, SENDER_TOPIC);
 
-	private static Logger log = LogManager.getLogger(NumberPlateSenderTest.class);
+    private static Logger log = LogManager.getLogger(NumberPlateSenderTest.class);
 
-	@Autowired
-	KafkaeskAdapterApplication kafkaeskAdapterApplication;
+    @Autowired
+    KafkaeskAdapterApplication kafkaeskAdapterApplication;
 
-	@Autowired
-	private NumberPlateSender numberPlateSender;
-	private KafkaMessageListenerContainer<String, NumberPlate> container;
-	private BlockingQueue<ConsumerRecord<String, NumberPlate>> records;
+    @Autowired
+    private NumberPlateSender numberPlateSender;
+    private KafkaMessageListenerContainer<String, NumberPlate> container;
+    private BlockingQueue<ConsumerRecord<String, NumberPlate>> records;
 
-	@BeforeClass
-	public static void beforeSetUp() {
-		System.setProperty("spring.kafka.producer.bootstrap-servers", embeddedKafka.getBrokersAsString());
-	}
+    @BeforeClass
+    public static void beforeSetUp() {
+        System.setProperty("spring.kafka.producer.bootstrap-servers", embeddedKafka.getBrokersAsString());
+    }
 
-	@Before
-	public void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
 
-		System.setProperty("spring.kafka.producer.bootstrap-servers", embeddedKafka.getBrokersAsString());
+        System.setProperty("spring.kafka.producer.bootstrap-servers", embeddedKafka.getBrokersAsString());
 
-		// set up the Kafka consumer properties
-		Map<String, Object> consumerProperties = KafkaTestUtils.consumerProps("sender", "false", embeddedKafka);
-		consumerProperties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-		consumerProperties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, NumberPlateDeserializer.class);
+        // set up the Kafka consumer properties
+        Map<String, Object> consumerProperties = KafkaTestUtils.consumerProps("sender", "false", embeddedKafka);
+        consumerProperties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        consumerProperties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, NumberPlateDeserializer.class);
 
-		// create a Kafka consumer factory
-		DefaultKafkaConsumerFactory<String, NumberPlate> consumerFactory = new DefaultKafkaConsumerFactory<>(
-				consumerProperties);
+        // create a Kafka consumer factory
+        DefaultKafkaConsumerFactory<String, NumberPlate> consumerFactory = new DefaultKafkaConsumerFactory<>(
+                consumerProperties);
 
-		// set the topic that needs to be consumed
-		ContainerProperties containerProperties = new ContainerProperties(SENDER_TOPIC);
+        // set the topic that needs to be consumed
+        ContainerProperties containerProperties = new ContainerProperties(SENDER_TOPIC);
 
-		// create a Kafka MessageListenerContainer
-		container = new KafkaMessageListenerContainer<>(consumerFactory, containerProperties);
+        // create a Kafka MessageListenerContainer
+        container = new KafkaMessageListenerContainer<>(consumerFactory, containerProperties);
 
-		// create a thread safe queue to store the received message
-		records = new LinkedBlockingQueue<>();
+        // create a thread safe queue to store the received message
+        records = new LinkedBlockingQueue<>();
 
-		// setup a Kafka message listener
-		container.setupMessageListener((MessageListener<String, NumberPlate>) record -> {
-			log.info("Message Listener received message='{}'", record.toString());
-			records.add(record);
-		});
+        // setup a Kafka message listener
+        container.setupMessageListener((MessageListener<String, NumberPlate>) record -> {
+            log.info("Message Listener received message='{}'", record.toString());
+            records.add(record);
+        });
 
-		// start the container and underlying message listener
-		container.start();
+        // start the container and underlying message listener
+        container.start();
 
-		// wait until the container has the required number of assigned partitions
-		ContainerTestUtils.waitForAssignment(container, embeddedKafka.getPartitionsPerTopic());
-	}
+        // wait until the container has the required number of assigned partitions
+        ContainerTestUtils.waitForAssignment(container, embeddedKafka.getPartitionsPerTopic());
+    }
 
-	// @DisplayName("Should send a Message to a Producer and retrieve it")
-	@Test
-	public void testProducer() throws InterruptedException {
-		// Test instance of Numberplate to send
-		NumberPlate localNumberplate = new NumberPlate();
-		byte[] bytes = "0x33".getBytes();
-		localNumberplate.setImageBlob(bytes);
-		localNumberplate.setNumberString("ABC123");
-		log.info(localNumberplate.toString());
+    // @DisplayName("Should send a Message to a Producer and retrieve it")
+    @Test
+    public void testProducer() throws InterruptedException {
+        // Test instance of Numberplate to send
+        NumberPlate localNumberplate = new NumberPlate();
+        byte[] bytes = "0x33".getBytes();
+        localNumberplate.setImageBlob(bytes);
+        localNumberplate.setNumberString("ABC123");
+        log.info(localNumberplate.toString());
 
-		// Send it
-		numberPlateSender.sendNumberPlateMessage(localNumberplate);
+        // Send it
+        numberPlateSender.sendNumberPlateMessage(localNumberplate);
 
-		// Retrieve it
-		ConsumerRecord<String, NumberPlate> received = records.poll(1, TimeUnit.SECONDS);
-		log.info("Received the following content of ConsumerRecord: {}", received);
+        // Retrieve it
+        ConsumerRecord<String, NumberPlate> received = records.poll(1, TimeUnit.SECONDS);
+        log.info("Received the following content of ConsumerRecord: {}", received);
 
-		// Assert it
-		if (received == null) {
-			assert false;
-		} else {
-			NumberPlate retrNumberplate = received.value();
-			assertEquals(retrNumberplate, localNumberplate);
-		}
-	}
+        System.out.println("HEADERS  " + received.headers().toString());
 
-	@After
-	public void tearDown() {
-		// stop the container
-		records.clear();
-		records = null;
-		container.stop();
-		container = null;
-	}
+        // Assert it
+        if (received == null) {
+            assert false;
+        } else {
+            NumberPlate retrNumberplate = received.value();
+            assertEquals(retrNumberplate, localNumberplate);
+        }
+    }
+
+    @After
+    public void tearDown() {
+        // stop the container
+        records.clear();
+        records = null;
+        container.stop();
+        container = null;
+    }
 
 }

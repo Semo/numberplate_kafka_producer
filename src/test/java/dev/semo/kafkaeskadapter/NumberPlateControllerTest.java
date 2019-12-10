@@ -128,6 +128,9 @@ public class NumberPlateControllerTest {
         }
     }
 
+    /**
+     * This fancy test mocks a webservice request.
+     */
     @Test
     public void shouldPostPostNumberPlateSuccessfully() {
         try {

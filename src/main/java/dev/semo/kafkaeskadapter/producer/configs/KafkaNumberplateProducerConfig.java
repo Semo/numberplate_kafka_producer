@@ -33,11 +33,19 @@ public class KafkaNumberplateProducerConfig {
     @Value(value = "${spring.kafka.producer.linger-ms-config}")
     private int linger;
 
+    @Value(value = "${spring.kafka.producer.acks}")
+    private String acks;
+
+    @Value(value = "${spring.kafka.producer.retries}")
+    private int retries;
+
     @Bean
     public ProducerFactory<String, NumberPlate> numberPlateProducerFactory() {
 
         Map<String, Object> configProps = new HashMap<>();
         configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);
+        configProps.put(ProducerConfig.ACKS_CONFIG, acks);
+        configProps.put(ProducerConfig.RETRIES_CONFIG, retries);
         configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, NumberPlateSerializer.class);
         configProps.put(ProducerConfig.RECONNECT_BACKOFF_MS_CONFIG, backoffTime);
@@ -54,6 +62,10 @@ public class KafkaNumberplateProducerConfig {
     }
 
     @Bean
+    /**
+     * Better whem used for a Thread. which will be invoked on each call and work, even when the sibling task ins't yet
+     * finished.
+     */
     public KafkaTemplate<String, NumberPlate> kafkaTemplate() {
         return new KafkaTemplate<>(numberPlateProducerFactory());
     }

@@ -9,6 +9,7 @@ public class RequestLoggingFilter {
 
     /**
      * Refines logging and shows the content of the header
+     *
      * @return CommonsRequestLoggingFilter
      */
     @Bean
